@@ -1,4 +1,4 @@
-def call(imageName, portNum) {
+def call() {
     pipeline {
         agent any
         parameters {
@@ -12,7 +12,7 @@ def call(imageName, portNum) {
             }
             stage('Package') {
                 when {
-                    expression { env.GIT_BRANCH == 'origin/main' }
+                    expression { env.GIT_BRANCH == "origin/${imageName}" }
                 }
                 steps {
                     withCredentials([string(credentialsId: 'DockerHub', variable: 'TOKEN')]) {
