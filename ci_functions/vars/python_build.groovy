@@ -1,9 +1,6 @@
-def call() {
+def call(dockerRepoName, imageName) {
     pipeline {
         agent any
-        parameters {
-            booleanParam(defaultValue: false, description: "Deploy the App", name: "DEPLOY")
-        }
         stages {
             stage('Python Lint') {
                 steps {
@@ -12,21 +9,25 @@ def call() {
             }
             stage('Package') {
                 when {
-                    expression { env.GIT_BRANCH == "origin/${imageName}" }
+                    expression { env.GIT_BRANCH == 'origin/main' }
                 }
                 steps {
                     withCredentials([string(credentialsId: 'DockerHub', variable: 'TOKEN')]) {
                         sh "docker login -u 'michaeljacinto' -p '$TOKEN' docker.io"
-                        sh "docker build -t ${imageName}:v${env.BUILD_NUMBER} --tag michaeljacinto/${imageName}:v${env.BUILD_NUMBER} ."
-                        sh "docker push michaeljacinto/${imageName}:v${env.BUILD_NUMBER}"
+                        sh "docker build -t ${dockerRepoName}:latest --tag michaeljacinto/${dockerRepoName}:${imageName} ."
+                        sh "docker push michaeljacinto/${dockerRepoName}:${imageName}"
                     }
                 }
             }
-            stage('Vulnerability Scan') {
-                steps {
-                    sh "docker scan --json ${imageName}:v${env.BUILD_NUMBER}"
-                }
-            }
+            // stage('Deliver') {
+            //     when {
+            //         expression { params.DEPLOY }
+            //     }
+            //     steps {
+            //         sh "docker stop ${dockerRepoName} || true && docker rm ${dockerRepoName} || true"
+            //         sh "docker run -d -p ${portNum}:${portNum} --name ${dockerRepoName} ${dockerRepoName}:latest"
+            //     }
+            // }
         }
     }
 }
