@@ -2,6 +2,11 @@ def call(dockerRepoName, imageName) {
     pipeline {
         agent any
         stages {
+            stage('Build') {
+                steps {
+                    sh 'pip install -r azure-vote/azure-vote/requirements.txt'
+                }
+            }
             stage('Python Lint') {
                 steps {
                     sh 'pylint-fail-under --fail_under 5.0 *.py'
