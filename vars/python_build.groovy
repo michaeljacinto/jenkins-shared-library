@@ -12,22 +12,25 @@ def call(dockerRepoName, imageName) {
                     sh 'pylint-fail-under --fail_under 5.0 *.py'
                 }
             }
-            stage('Package') {
-                when {
-                    expression { env.GIT_BRANCH == 'origin/master' }
-                }
-                steps {
-                    withCredentials([string(credentialsId: 'DockerHub', variable: 'TOKEN')]) {
-                        sh "docker login -u '${dockerRepoName}' -p '$TOKEN' docker.io"
-                        sh "docker build -t ${imageName} --tag ${dockerRepoName}/${imageName} ."
-                        sh "docker push ${dockerRepoName}/${imageName}"
-                    }
-                }
-            }
+            // stage('Package') {
+            //     when {
+            //         expression { env.GIT_BRANCH == 'origin/master' }
+            //     }
+            //     steps {
+            //         withCredentials([string(credentialsId: 'DockerHub', variable: 'TOKEN')]) {
+            //             sh "docker login -u '${dockerRepoName}' -p '$TOKEN' docker.io"
+            //             sh "docker build -t ${imageName} --tag ${dockerRepoName}/${imageName} ."
+            //             sh "docker push ${dockerRepoName}/${imageName}"
+            //         }
+            //     }
+            // }
             stage('Deploy') {
                 steps{
+                    withCredentials([
+                        usernamePassword(credentialsId: 'azure-host-credentials', usernameVariable: 'SSH_USER', passwordVariable: 'SSH_HOST')
+                    ])
                     sshagent(credentials : ['kafka-key-pair']) {
-                        sh 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no mkdir test1'
+                        sh "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $SSH_USER $SSH_HOST 'mkdir test1'"
                     }
                 }
             } 
