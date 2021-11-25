@@ -27,7 +27,7 @@ def call(dockerRepoName, imageName) {
             stage('Deploy') {
                 steps {
                     sshagent(credentials : ['kafka-key-pair']) {
-                        sh "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no michaeljacinto.westus2.cloudapp.azure.com 'mkdir test1'"
+                        sh "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no azureuser@michaeljacinto.westus2.cloudapp.azure.com 'mkdir test1'"
                     }
                 }
             } 
