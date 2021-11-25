@@ -24,15 +24,18 @@ def call(dockerRepoName, imageName) {
                     }
                 }
             }
-            // stage('Deliver') {
-            //     when {
-            //         expression { params.DEPLOY }
-            //     }
-            //     steps {
+            stage('Deploy') {
+                steps{
+                    sshagent(credentials : ['kafka-key-pair']) {
+                        sh 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no mkdir test1'
+                    }
+                }
+            } 
+            // cd microservices/Deployment
+            // 
             //         sh "docker stop ${dockerRepoName} || true && docker rm ${dockerRepoName} || true"
-            //         sh "docker run -d -p ${portNum}:${portNum} --name ${dockerRepoName} ${dockerRepoName}:latest"
+            //         sh "docker-compose -f ./microservices/Deployment/docker-compose-4850.yml up -d"
             //     }
-            // }
         }
     }
 }
