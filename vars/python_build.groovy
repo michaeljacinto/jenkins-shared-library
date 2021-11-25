@@ -24,15 +24,14 @@ def call(dockerRepoName, imageName) {
             //         }
             //     }
             // }
-            withCredentials([usernamePassword(credentialsId: 'azure-host-credentials', usernameVariable: 'SSH_USER', passwordVariable: 'SSH_HOST')]) {
-                stage('Deploy') {
-                    steps {
-                        sshagent(credentials : ['kafka-key-pair']) {
-                            sh "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $SSH_USER $SSH_HOST 'mkdir test1'"
-                        }
+            stage('Deploy') {
+                steps {
+                    sshagent(credentials : ['kafka-key-pair']) {
+                        sh "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $SSH_USER $SSH_HOST 'mkdir test1'"
                     }
-                } 
-            }
+                }
+            } 
+            
             // cd microservices/Deployment
             // 
             //         sh "docker stop ${dockerRepoName} || true && docker rm ${dockerRepoName} || true"
