@@ -1,5 +1,3 @@
-def ssh_cmd = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no azureuser@michaeljacinto.westus2.cloudapp.azure.com"
-
 def call(dockerRepoName, imageName) {
     pipeline {
         agent any
@@ -29,6 +27,7 @@ def call(dockerRepoName, imageName) {
             stage('Deploy') {
                 steps {
                     sshagent(credentials : ['kafka-key-pair']) {
+                        def ssh_cmd = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no azureuser@michaeljacinto.westus2.cloudapp.azure.com"
                         sh "${ssh_cmd} 'docker pull ${dockerRepoName}/${imageName}'"
                         sh "${ssh_cmd} 'docker-compose -f ./microservices/Deployment/docker-compose-4850.yml up -d'"
                     }
