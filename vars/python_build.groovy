@@ -1,5 +1,8 @@
 def call(dockerRepoName, imageName) {
     pipeline {
+           environment {
+            ssh_cmd = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no azureuser@michaeljacinto.westus2.cloudapp.azure.com"
+        }
         agent any
         stages {
             stage('Build') {
@@ -25,7 +28,6 @@ def call(dockerRepoName, imageName) {
                 }
             }
             stage('Deploy') {
-                def ssh_cmd = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no azureuser@michaeljacinto.westus2.cloudapp.azure.com"
                 steps {
                     sshagent(credentials : ['kafka-key-pair']) {
                         sh "${ssh_cmd} 'docker pull ${dockerRepoName}/${imageName}'"
